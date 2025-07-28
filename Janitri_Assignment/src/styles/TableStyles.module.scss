@@ -1,0 +1,103 @@
+$table-header-bg: #3C3B4A;
+$table-header-color: #F3EAEB;
+$table-bg: #F3EAEB;
+$table-border-color: #AE8667;
+$table-row-hover-bg: #A85884;
+$table-empty-text-color: #3C3B4A;
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: $table-bg;
+  border: 1px solid $table-border-color;
+  border-radius: 6px;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+.table thead {
+  background-color: $table-header-bg;
+  color: $table-header-color;
+}
+
+.table thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 2px solid $table-border-color;
+}
+
+.table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid $table-border-color;
+  font-size: 13px;
+  color: $table-header-bg;
+}
+
+.table tbody tr:hover {
+  background-color: $table-row-hover-bg;
+  color: white;
+  cursor: default;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-empty {
+  text-align: center;
+  padding: 20px 0;
+  color: $table-empty-text-color;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Responsive vertical table for mobile */
+@media (max-width: 600px) {
+  .table-responsive {
+    width: 100%;
+    border: 0;
+  }
+
+  .table-responsive thead {
+    display: none;
+  }
+
+  .table-responsive tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid $table-border-color;
+    border-radius: 6px;
+    padding: 12px;
+    background-color: $table-bg;
+  }
+
+  .table-responsive tbody tr:hover {
+    background-color: $table-bg;
+    color: $table-header-bg;
+    cursor: default;
+  }
+
+  .table-responsive tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border: none;
+    border-bottom: 1px solid $table-border-color;
+    font-size: 14px;
+    color: $table-header-bg;
+  }
+
+  .table-responsive tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .table-responsive tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: $table-header-bg;
+    flex-basis: 50%;
+    text-align: left;
+  }
+}

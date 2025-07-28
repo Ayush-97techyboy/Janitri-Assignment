@@ -1,0 +1,46 @@
+.appContainer {
+  display: flex;
+  height: 100vh;
+  background-color: #F1E9EA; /* Dominant color */
+}
+
+.appMain {
+  flex-grow: 1;
+  padding: 80px 24px 24px 24px; /* top padding to offset fixed header */
+  overflow-y: auto;
+  background-color: #F3EAEB; /* Light background */
+}
+
+.drawerPaper {
+  width: 240px;
+  background-color: #3C3B4A; /* Sidebar background */
+  color: #F3EAEB; /* Sidebar text color */
+}
+
+.active {
+  background-color: #A85884; /* Active menu item background */
+  color: white;
+}
+
+.logoContainer {
+  padding: 16px;
+  text-align: center;
+}
+
+.logo {
+  max-width: 150px;
+  height: auto;
+}
+
+/* Additional palette colors for future use */
+.paletteA5929B {
+  color: #A5929B;
+}
+
+.paletteAE8667 {
+  color: #AE8667;
+}
+
+.paletteAFB4B8 {
+  color: #AFB4B8;
+}

@@ -1,0 +1,54 @@
+.appBar {
+  background-color: #F1E9EA; /* Changed to dominant color */
+  color: #3C3B4A; /* Changed to dark text for contrast */
+  z-index: 1300; /* Above drawer */
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+}
+
+.toolbar {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  max-height: 40px;
+  max-width: 150px;
+  object-fit: contain;
+}
+
+.menuButtonContainer {
+  position: absolute;
+  left: 12rem; /* Add margin from left edge */
+  transform: none;
+}
+
+.certifiedContainer {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding-right: 16px;
+}
+
+.certifiedLogoContainer {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding-right: 16px;
+}
+
+.certifiedLogo {
+  max-height: 40px;
+  max-width: 120px;
+  object-fit: contain;
+}

@@ -1,0 +1,451 @@
+import { useSelector, useDispatch } from 'react-redux'
+import { addDevice, updateDevice, removeDevice, setDevices } from '../store/devicesSlice'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from '@mui/material'
+
+const initialFormState = {
+  id: '',
+  type: '',
+  facility: '',
+  status: 'Online',
+  battery: 100,
+  lastServiceDate: '',
+  lastInstallationDate: '',
+  amcStatus: 'Active',
+}
+
+const DeviceInventory = () => {
+  const devices = useSelector((state) => state.devices.devices)
+  const dispatch = useDispatch()
+
+  const [open, setOpen] = useState(false)
+  const [form, setForm] = useState(initialFormState)
+  const [isEdit, setIsEdit] = useState(false)
+
+  useEffect(() => {
+    // Load devices from localStorage if available
+    const storedDevices = localStorage.getItem('devices')
+    if (storedDevices) {
+      dispatch(setDevices(JSON.parse(storedDevices)))
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    // Persist devices to localStorage
+    localStorage.setItem('devices', JSON.stringify(devices))
+  }, [devices])
+
+  const handleOpen = (device) => {
+    if (device) {
+      setForm(device)
+      setIsEdit(true)
+    } else {
+      setForm(initialFormState)
+      setIsEdit(false)
+    }
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = () => {
+    if (isEdit) {
+      dispatch(updateDevice(form))
+    } else {
+      dispatch(addDevice({ ...form, id: Date.now().toString() }))
+    }
+    setOpen(false)
+  }
+
+  const handleDelete = (id) => {
+    dispatch(removeDevice(id))
+  }
+
+  return (
+    <div className={styles['table-container']}>
+      <h2>Device Inventory Dashboard</h2>
+      <Button variant="contained" color="primary" onClick={() => handleOpen(null)} sx={{ mb: 2 }} disableElevation>
+        Add Device
+      </Button>
+
+      <TableContainer component={Paper} sx={{ marginTop: '2rem' }}>
+        <Table aria-label="device inventory table" className={styles['table-responsive']}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Type</TableCell>
+              <TableCell>ID</TableCell>
+              <TableCell>Facility</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Battery %</TableCell>
+              <TableCell>Last Service Date</TableCell>
+              <TableCell>Last Installation Date</TableCell>
+              <TableCell>AMC/CMC Status</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {devices.length > 0 ? (
+              devices.map((device) => (
+                <TableRow key={device.id}>
+                  <TableCell data-label="Type">{device.type}</TableCell>
+                  <TableCell data-label="ID">{device.id}</TableCell>
+                  <TableCell data-label="Facility">{device.facility}</TableCell>
+                  <TableCell data-label="Status">{device.status}</TableCell>
+                  <TableCell data-label="Battery %">{device.battery}</TableCell>
+                  <TableCell data-label="Last Service Date">{device.lastServiceDate}</TableCell>
+                  <TableCell data-label="Last Installation Date">{device.lastInstallationDate}</TableCell>
+                  <TableCell data-label="AMC/CMC Status">{device.amcStatus}</TableCell>
+                  <TableCell data-label="Actions">
+                    <Button size="small" onClick={() => handleOpen(device)}>Edit</Button>
+                    <Button size="small" color="error" onClick={() => handleDelete(device.id)}>Delete</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={9} align="center">No devices found.</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{isEdit ? 'Edit Device' : 'Add Device'}</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Type"
+            name="type"
+            value={form.type}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Facility"
+            name="facility"
+            value={form.facility}
+            onChange={handleChange}
+            fullWidth
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Status</InputLabel>
+            <Select
+              name="status"
+              value={form.status}
+              label="Status"
+              onChange={handleChange}
+            >
+              <MenuItem value="Online">Online</MenuItem>
+              <MenuItem value="Offline">Offline</MenuItem>
+              <MenuItem value="Maintenance">Maintenance</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            margin="dense"
+            label="Battery %"
+            name="battery"
+            type="number"
+            value={form.battery}
+            onChange={handleChange}
+            fullWidth
+            inputProps={{ min: 0, max: 100 }}
+          />
+          <TextField
+            margin="dense"
+            label="Last Service Date"
+            name="lastServiceDate"
+            type="date"
+            value={form.lastServiceDate}
+            onChange={handleChange}
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            margin="dense"
+            label="Last Installation Date"
+            name="lastInstallationDate"
+            type="date"
+            value={form.lastInstallationDate}
+            onChange={handleChange}
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>AMC/CMC Status</InputLabel>
+            <Select
+              name="amcStatus"
+              value={form.amcStatus}
+              label="AMC/CMC Status"
+              onChange={handleChange}
+            >
+              <MenuItem value="Active">Active</MenuItem>
+              <MenuItem value="Expired">Expired</MenuItem>
+              <MenuItem value="Pending">Pending</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSubmit} variant="contained" color="primary">
+            {isEdit ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  )
+}
+
+
+import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { addDevice, updateDevice, removeDevice, setDevices } from '../store/devicesSlice'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from '@mui/material'
+import styles from '../styles/TableStyles.module.scss'
+
+const initialFormState = {
+  id: '',
+  type: '',
+  facility: '',
+  status: 'Online',
+  battery: 100,
+  lastServiceDate: '',
+  lastInstallationDate: '',
+  amcStatus: 'Active',
+}
+
+const DeviceInventory = () => {
+  const devices = useSelector((state) => state.devices.devices)
+  const dispatch = useDispatch()
+
+  const [open, setOpen] = useState(false)
+  const [form, setForm] = useState(initialFormState)
+  const [isEdit, setIsEdit] = useState(false)
+
+  useEffect(() => {
+    // Load devices from localStorage if available
+    const storedDevices = localStorage.getItem('devices')
+    if (storedDevices) {
+      dispatch(setDevices(JSON.parse(storedDevices)))
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    // Persist devices to localStorage
+    localStorage.setItem('devices', JSON.stringify(devices))
+  }, [devices])
+
+  const handleOpen = (device) => {
+    if (device) {
+      setForm(device)
+      setIsEdit(true)
+    } else {
+      setForm(initialFormState)
+      setIsEdit(false)
+    }
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = () => {
+    if (isEdit) {
+      dispatch(updateDevice(form))
+    } else {
+      dispatch(addDevice({ ...form, id: Date.now().toString() }))
+    }
+    setOpen(false)
+  }
+
+  const handleDelete = (id) => {
+    dispatch(removeDevice(id))
+  }
+
+  return (
+    <div className={styles['table-container']}>
+      <h2>Device Inventory Dashboard</h2>
+      <Button variant="contained" color="primary" onClick={() => handleOpen(null)} sx={{ mb: 2 }} disableElevation>
+        Add Device
+      </Button>
+
+      <TableContainer component={Paper} sx={{ marginTop: '2rem' }}>
+        <Table aria-label="device inventory table" className={styles['table-responsive']}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Type</TableCell>
+              <TableCell>ID</TableCell>
+              <TableCell>Facility</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Battery %</TableCell>
+              <TableCell>Last Service Date</TableCell>
+              <TableCell>Last Installation Date</TableCell>
+              <TableCell>AMC/CMC Status</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {devices.length > 0 ? (
+              devices.map((device) => (
+                <TableRow key={device.id}>
+                  <TableCell data-label="Type">{device.type}</TableCell>
+                  <TableCell data-label="ID">{device.id}</TableCell>
+                  <TableCell data-label="Facility">{device.facility}</TableCell>
+                  <TableCell data-label="Status">{device.status}</TableCell>
+                  <TableCell data-label="Battery %">{device.battery}</TableCell>
+                  <TableCell data-label="Last Service Date">{device.lastServiceDate}</TableCell>
+                  <TableCell data-label="Last Installation Date">{device.lastInstallationDate}</TableCell>
+                  <TableCell data-label="AMC/CMC Status">{device.amcStatus}</TableCell>
+                  <TableCell data-label="Actions">
+                    <Button size="small" onClick={() => handleOpen(device)}>Edit</Button>
+                    <Button size="small" color="error" onClick={() => handleDelete(device.id)}>Delete</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={9} align="center">No devices found.</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{isEdit ? 'Edit Device' : 'Add Device'}</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Type"
+            name="type"
+            value={form.type}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Facility"
+            name="facility"
+            value={form.facility}
+            onChange={handleChange}
+            fullWidth
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Status</InputLabel>
+            <Select
+              name="status"
+              value={form.status}
+              label="Status"
+              onChange={handleChange}
+            >
+              <MenuItem value="Online">Online</MenuItem>
+              <MenuItem value="Offline">Offline</MenuItem>
+              <MenuItem value="Maintenance">Maintenance</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            margin="dense"
+            label="Battery %"
+            name="battery"
+            type="number"
+            value={form.battery}
+            onChange={handleChange}
+            fullWidth
+            inputProps={{ min: 0, max: 100 }}
+          />
+          <TextField
+            margin="dense"
+            label="Last Service Date"
+            name="lastServiceDate"
+            type="date"
+            value={form.lastServiceDate}
+            onChange={handleChange}
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            margin="dense"
+            label="Last Installation Date"
+            name="lastInstallationDate"
+            type="date"
+            value={form.lastInstallationDate}
+            onChange={handleChange}
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>AMC/CMC Status</InputLabel>
+            <Select
+              name="amcStatus"
+              value={form.amcStatus}
+              label="AMC/CMC Status"
+              onChange={handleChange}
+            >
+              <MenuItem value="Active">Active</MenuItem>
+              <MenuItem value="Expired">Expired</MenuItem>
+              <MenuItem value="Pending">Pending</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSubmit} variant="contained" color="primary">
+            {isEdit ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  )
+}
+
+export default DeviceInventory
+=======

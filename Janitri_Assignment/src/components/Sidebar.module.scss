@@ -1,0 +1,24 @@
+.drawerPaper {
+  width: 240px;
+  background-color: #3C3B4A; /* Sidebar background */
+  color: #F3EAEB; /* Sidebar text color */
+}
+
+.active {
+  background-color: #A85884; /* Active menu item background */
+  color: white;
+}
+
+.logoContainer {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebarLogo {
+  width: 80%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
