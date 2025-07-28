@@ -11,6 +11,7 @@ import BuildIcon from '@mui/icons-material/Build'
 import EventNoteIcon from '@mui/icons-material/EventNote'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import styles from './Sidebar.module.scss'
+import JanitriLogo from '../assets/Images/Janitri Logo.png'
 
 const menuItems = [
   { text: 'Device Inventory', path: '/', icon: <DevicesIcon /> },
@@ -33,7 +34,7 @@ const Sidebar = ({ open, onClose }) => {
     >
       <div className={styles.logoContainer}>
         <img
-          src="/src/assets/Images/Janitri Logo.png"
+          src={JanitriLogo}
           alt="Janitri Logo"
           className={styles.sidebarLogo}
         />
